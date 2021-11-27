@@ -17,6 +17,10 @@ on:
       Tempoary_CONFIG:
         description: '配置文件 [可选]'
         default: ''
+      ssh:
+        description: 'SSH connection to Actions'
+        required: false
+        default: 'false'
 ### 结束
 
   #push:
@@ -32,15 +36,15 @@ on:
 ### 环境变量设置
 env:
 # 编译时调用的 [.config] 文件名称
-  CONFIG_FILE: x86_64
+  CONFIG_FILE: x86_64-1
 # 源码仓库:分支
-  DEFAULT_SOURCE: coolsnowwolf/lede:master
+  DEFAULT_SOURCE: openwrt/openwrt:master
 # 上传固件到 Github Releases
-  UPLOAD_RELEASES: true
+  UPLOAD_RELEASES: false
 # 上传固件到 Github Artifacts
   UPLOAD_ARTIFACTS: false
 # 上传 bin 文件夹到 Github Artifacts
-  UPLOAD_BIN_ARTIFACTS: false
+  UPLOAD_BIN_ARTIFACTS: true
 # 删除无用文件以增加编译空间
   DELETE_USELESS_FILES: true
 # 删除早期的 workflow 任务
@@ -108,10 +112,19 @@ jobs:
       run: |
         git clone -b $REPO_BRANCH $REPO_URL openwrt
         ln -sf /workdir/openwrt $GITHUB_WORKSPACE/openwrt
+        git clone --depth=1 https://github.com/fw876/helloworld.git $GITHUB_WORKSPACE/openwrt/package/helloworld
+        git -C $GITHUB_WORKSPACE/openwrt/package/helloworld pull
+        git clone https://github.com/xiaorouji/openwrt-passwall $GITHUB_WORKSPACE/openwrt/package/passwall
+        git clone https://github.com/olfasharon/openwrt-packages/ $GITHUB_WORKSPACE/openwrt/package/olfasharon
         cd openwrt
+        mkdir -p package/helloworld
+           for i in "dns2socks" "microsocks" "ipt2socks" "pdnsd-alt" "redsocks2"; do \
+           svn checkout "https://github.com/immortalwrt/packages/trunk/net/$i" "package/helloworld/$i"; \
+           done  
+        cd openwrt  
         ./scripts/feeds update -a
         ./scripts/feeds install -a
-
+    
     - name: Run AutoBuild_DiyScript.sh
       run: |
         chmod +x Scripts/AutoBuild_*.sh
@@ -124,6 +137,13 @@ jobs:
         rm .config && cp $GITHUB_WORKSPACE/Configs/$CONFIG_FILE .config
         Firmware_Diy_Main
         Firmware_Diy
+    
+    - name: SSH connection to Actions
+      uses: P3TERX/ssh2actions@v1.0.0
+      if: (github.event.inputs.ssh == 'true' && github.event.inputs.ssh  != 'false') || contains(github.event.action, 'ssh')
+      env:
+        TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
 
     - name: Compile
       run: |
