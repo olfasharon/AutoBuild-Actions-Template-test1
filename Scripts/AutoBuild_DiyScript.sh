@@ -6,7 +6,7 @@ Firmware_Diy_Core() {
 
 	Author=AUTO
 	Author_URL=AUTO
-	Default_IP="192.168.1.1"
+	Default_IP="192.168.1.160"
 	Banner_Message="Powered by AutoBuild-Actions"
 
 	Short_Firmware_Date=true
@@ -16,7 +16,7 @@ Firmware_Diy_Core() {
 
 	INCLUDE_AutoBuild_Features=true
 	INCLUDE_DRM_I915=false
-	INCLUDE_Original_OpenWrt_Compatible=false
+	INCLUDE_Original_OpenWrt_Compatible=true
 }
 
 Firmware_Diy() {
