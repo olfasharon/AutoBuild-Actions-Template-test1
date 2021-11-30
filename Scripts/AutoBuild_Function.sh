@@ -305,7 +305,6 @@ Firmware_Diy_End() {
 	esac
 	[[ $(ls) =~ 'AutoBuild-' ]] && {
 		cd -
-		cp -a ${Firmware_Path}/AutoBuild-* bin/Firmware
 	}
 	echo "[$(date "+%H:%M:%S")] Actions Avaliable: $(df -h | grep "/dev/root" | awk '{printf $4}')"
 	ECHO "[Firmware_Diy_End] Done"
