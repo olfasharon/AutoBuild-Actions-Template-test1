@@ -1,6 +1,6 @@
 #!/bin/bash
 # AutoBuild Module by Hyy2001 <https://github.com/Hyy2001X/AutoBuild-Actions>
-# AutoBuild DiyScript
+# AutoBuild DiyScript   AutoBuild_DiyScript.sh
 
 Firmware_Diy_Core() {
 
